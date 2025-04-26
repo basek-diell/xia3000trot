@@ -1,6 +1,6 @@
 #!/bin/sh
 
-URL="https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main"
+URL="https://raw.githubusercontent.com/basek-diell/xia3000t./refs/heads/main"
 DIR="/etc/config"
 DIR_BACKUP="/root/backup"
 config_files="dhcp
