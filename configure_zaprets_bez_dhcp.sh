@@ -114,12 +114,6 @@ if ! grep -q "option name 'Block_UDP_443'" /etc/config/firewall; then
   service firewall restart
 fi
 
-cronTask="0 4 * * * wget -O - $URL/configure_zaprets.sh | sh"
-if ! grep -q "$cronTask" /etc/crontabs/root; then
-  echo "Add cron task auto run configure_zapret..."
-  echo "$cronTask" >> /etc/crontabs/root
-fi
-
 manage_package "podkop" "disable" "stop"
 manage_package "ruantiblock" "disable" "stop"
 manage_package "https-dns-proxy" "enable" "start"
