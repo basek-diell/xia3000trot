@@ -15,5 +15,13 @@
       wget -O - https://raw.githubusercontent.com/basek-diell/xia3000t./refs/heads/main/off_configure_zaprets.sh | sh
       
       
-2. 
+2. скрипт для автоматической настройки httрs-dns-рrоxy, youtubeunblock, dhcp пакетов для обхода блокировок без использования VPN сервисов и поломки остальных сервисов:
+
+         wget -O - https://raw.githubusercontent.com/basek-diell/xia3000t./refs/heads/main/configure_zaprets_bez_dhcp.sh | sh
+
+
+для возврата как было:
+      
+      wget -O - https://raw.githubusercontent.com/basek-diell/xia3000t./refs/heads/main/off_configure_zaprets.sh | sh
+      
 
