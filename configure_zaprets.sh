@@ -30,21 +30,32 @@ manage_package() {
   local autostart="$2"
   local process="$3"
 
-  if opkg list-installed | grep -q "^$name"; then
-    if /etc/init.d/$name enabled; then
-      [ "$autostart" = "disable" ] && /etc/init.d/$name disable
-    else
-      [ "$autostart" = "enable" ] && /etc/init.d/$name enable
-    fi
+    # Проверка, установлен ли пакет
+    if opkg list-installed | grep -q "^$name"; then
+        
+        # Проверка, включен ли автозапуск
+        if /etc/init.d/$name enabled; then
+            if [ "$autostart" = "disable" ]; then
+                /etc/init.d/$name disable
+            fi
+        else
+            if [ "$autostart" = "enable" ]; then
+                /etc/init.d/$name enable
+            fi
+        fi
 
-    if pidof $name > /dev/null; then
-      [ "$process" = "stop" ] && /etc/init.d/$name stop
-    else
-      [ "$process" = "start" ] && /etc/init.d/$name start
+        # Проверка, запущен ли процесс
+        if pidof $name > /dev/null; then
+            if [ "$process" = "stop" ]; then
+                /etc/init.d/$name stop
+            fi
+        else
+            if [ "$process" = "start" ]; then
+                /etc/init.d/$name start
+            fi
+        fi
     fi
-  fi
 }
-
 install_youtubeunblock_packages() {
   PKGARCH=$(opkg print-architecture | awk 'BEGIN {max=0} {if ($3 > max) {max = $3; arch = $2}} END {print arch}')
   BASE_URL="https://github.com/Waujito/youtubeUnblock/releases/download/v1.0.0/"
