@@ -8,6 +8,7 @@
 1. скрипт для автоматической настройки httрs-dns-рrоxy, youtubeunblock, dhcp пакетов для обхода блокировок без использования VPN сервисов и поломки остальных сервисов.
 
 
+
       wget -O - https://raw.githubusercontent.com/basek-diell/xia3000t./refs/heads/main/configure_zaprets.sh | sh
 
 
