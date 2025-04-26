@@ -265,7 +265,9 @@ if ! grep -q "option name 'Block_UDP_443'" /etc/config/firewall; then
 fi
 
 cronTask="0 4 * * * wget -O - $URL/configure_zaprets.sh | sh"
-if ! grep -q "$cronTask" /etc/crontabs/root; then
+str=$(grep -i "0 4 \* \* \* wget -O - $URL/configure_zaprets.sh | sh" /etc/crontabs/root)
+if [ -z "$str" ] 
+then
   echo "Add cron task auto run configure_zapret..."
   echo "$cronTask" >> /etc/crontabs/root
 fi
