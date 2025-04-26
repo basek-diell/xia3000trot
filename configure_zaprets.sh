@@ -97,16 +97,23 @@ install_youtubeunblock_packages
 opkg upgrade youtubeUnblock
 opkg upgrade luci-app-youtubeUnblock
 
-if [ ! -d "$DIR_BACKUP" ]; then
+if [ ! -d "$DIR_BACKUP" ]
+then
   echo "Backup files..."
-  mkdir -p "$DIR_BACKUP"
-  for file in $config_files; do
-    cp -f "$DIR/$file" "$DIR_BACKUP/$file"
+  mkdir -p $DIR_BACKUP
+  for file in $config_files
+  do
+    cp -f "$DIR/$file" "$DIR_BACKUP/$file"  
   done
 
   echo "Replace configs..."
-  for file in $config_files; do
-    [ "$file" != "dhcp" ] && wget -O "$DIR/$file" "$URL/config_files/$file"
+
+  for file in $config_files
+  do
+    if [ "$file" != "dhcp" ] 
+    then 
+      wget -O "$DIR/$file" "$URL/config_files/$file" 
+    fi
   done
 fi
 
