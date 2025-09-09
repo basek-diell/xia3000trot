@@ -1,27 +1,28 @@
-# X3000_configs
+# RouterichAX3000_configs
 
-СКРИПТЫ ДЛЯ ВВОДА В ТЕРМИНЕЛА OPENWRT XIAOMI 3000T НА ДРУГИХ НЕ ПРОВЕРЯЛОСЬ
+Протестировано на роутере Routerich AX 3000 прошивка OpenWrt 23.05.5 r24106-10cc5fcd00
 
 ### Разблокировка сайтов с помощью youtubeUnblock + https-dns-proxy
 Разблокировка сайтов с помощью подмены **Hello пакетов DPI** (приложение **youtubeUnblock**) + точечное перенаправление доменов, которые находятся в **геоблоке на ComssDNS** (через перенаправление dnsmasq и пакет **https-dns-proxy**) + добавление правил для **блокировки протокола QUIC** на уровне роутера
 
-1. скрипт для автоматической настройки httрs-dns-рrоxy, youtubeunblock, dhcp пакетов для обхода блокировок без использования VPN сервисов и поломки остальных сервисов:
+Для корректной работы скрипта нужны установленные пакеты **youtubeUnblock** и **https-dns-proxy**
 
-         wget -O - https://raw.githubusercontent.com/basek-diell/xia3000t./refs/heads/main/configure_zaprets.sh | sh
+**Установка**
+```sh
+wget -O - https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main/configure_zaprets.sh | sh
+```
+**Откат**
+```sh
+wget -O - https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main/off_configure_zaprets.sh | sh
+```
 
+### Разблокировка сайтов с помощью WARP от CloudFlare
 
-для возврата как было:
-      
-      wget -O - https://raw.githubusercontent.com/basek-diell/xia3000t./refs/heads/main/off_configure_zaprets.sh | sh
-      
-      
-2. скрипт для автоматической настройки httрs-dns-рrоxy, youtubeunblock для обхода блокировок без использования VPN сервисов:
-
-         wget -O - https://raw.githubusercontent.com/basek-diell/xia3000t./refs/heads/main/configure_zaprets_bez_dhcp.sh | sh
-
-
-для возврата как было:
-      
-      wget -O - https://raw.githubusercontent.com/basek-diell/xia3000t./refs/heads/main/off_configure_zaprets.sh | sh
-      
-
+**Установка**
+```sh
+wget --no-check-certificate -O /tmp/awg_config.sh https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main/awg_config.sh && chmod +x /tmp/awg_config.sh && /tmp/awg_config.sh
+```
+**Откат**
+```sh
+wget -O - https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main/off_awg_config.sh | sh
+```
