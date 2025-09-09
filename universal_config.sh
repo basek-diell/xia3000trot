@@ -431,15 +431,15 @@ if [ -z "$INSTALLED_VERSION" ]; then
 fi
 ###########
 
-#проверяем установлени ли пакет dnsmasq-full
+#проверяем установлен ли пакет dnsmasq-full
 if opkg list-installed | grep -q dnsmasq-full; then
-	echo "dnsmasq-full already installed..."
+    echo "dnsmasq-full already installed..."
 else
-	echo "Installed dnsmasq-full..."
-	cd /tmp/ && opkg download dnsmasq-full
-	opkg remove dnsmasq && opkg install dnsmasq-full --cache /tmp/
+    echo "Installed dnsmasq-full..."
+    cd /tmp/ && opkg download dnsmasq-full
+    opkg remove dnsmasq && opkg install dnsmasq-full --cache /tmp/
 
-	[ -f /etc/config/dhcp-opkg ] && cp /etc/config/dhcp /etc/config/dhcp-old && mv /etc/config/dhcp-opkg /etc/config/dhcp
+    [ -f /etc/config/dhcp-opkg ] && cp /etc/config/dhcp /etc/config/dhcp-old && mv /etc/config/dhcp-opkg /etc/config/dhcp
 fi
 
 printf "Setting confdir dnsmasq"
@@ -453,7 +453,7 @@ firewall
 https-dns-proxy
 youtubeUnblock
 dhcp"
-URL=https://raw.githubusercontent.com/basek-diell/xia3000t./refs/heads/main"
+URL="https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main"
 
 checkPackageAndInstall "https-dns-proxy" "0"
 
