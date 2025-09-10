@@ -559,7 +559,8 @@ while [ $currIter -lt $countRepeatAWGGen ] && [ "$isExit" = "0" ]
 do
 	currIter=$(( $currIter + 1 ))
 	printf "\033[32;1mCreate and Check AWG WARP... Attempt #$currIter... Please wait...\033[0m\n"
-	if [ "$is_manual_input_parameters" = "y" ] || [ "$is_manual_input_parameters" = "Y" ]; then
+	if [ "$is_manual_input_parameters" = "y" ] || [ "$is_manual_input_parameters" = "Y" ]
+ then
 		read -r -p "Enter the private key (from [Interface]):"$'\n' PrivateKey
 		read -r -p "Enter S1 value (from [Interface]):"$'\n' S1
 		read -r -p "Enter S2 value (from [Interface]):"$'\n' S2
