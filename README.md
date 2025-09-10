@@ -26,8 +26,9 @@ wget --no-check-certificate -O /tmp/awg_config.sh https://raw.githubusercontent.
 ```sh
 wget -O - https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main/off_awg_config.sh | sh
 
+
 **Основной**
 ```sh
-wget -O - https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main/configure_zaprets.sh | sh
+wget -O - https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main/universal_config.sh | sh
 ```
 **конец**
