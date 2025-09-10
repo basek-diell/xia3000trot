@@ -756,14 +756,13 @@ do
 done
 
 varByPass=0
-# -- Переменные
 URL="https://raw.githubusercontent.com/basek-diell/xia3000trot/refs/heads/main"
 path_podkop_config="/etc/config/podkop"
 path_podkop_config_backup="/root/podkop"
 PACKAGE="podkop"
 REQUIRED_VERSION="0.2.5-1"
 
-# -- Проверка результата AWG WARP
+# Проверка результата AWG WARP
 if [ "$isExit" = "1" ]; then
 	printf "\033[32;1mAWG WARP well work...\033[0m\n"
 	varByPass=1
@@ -807,7 +806,7 @@ if command -v service >/dev/null; then
 	service odhcpd restart
 fi
 
-# -- Выбор нужного конфига podkop в зависимости от обхода
+# Выбор нужного конфига podkop
 case $varByPass in
 	1)
 		nameFileReplacePodkop="podkop"
@@ -831,18 +830,17 @@ case $varByPass in
 		;;
 esac
 
-# -- Проверка версии podkop
+# Проверка версии podkop
 INSTALLED_VERSION=$(opkg list-installed | grep "^$PACKAGE" | awk '{print $3}')
 if [ -n "$INSTALLED_VERSION" ] && [ "$INSTALLED_VERSION" != "$REQUIRED_VERSION" ]; then
 	echo "Version package $PACKAGE not equal $REQUIRED_VERSION. Removing package..."
 	opkg remove --force-removal-of-dependent-packages $PACKAGE
 fi
 
-# -- Установка или ре-конфигурирование podkop
+# Установка или ре-конфигурирование podkop
 if [ -f "/etc/init.d/podkop" ]; then
 	printf "Podkop installed. Reconfigure on AWG WARP and Opera Proxy? (y/n): \n"
-	is_reconfig_podkop="y"
-	read is_reconfig_podkop
+	read -r is_reconfig_podkop
 	if [ "$is_reconfig_podkop" = "y" ] || [ "$is_reconfig_podkop" = "Y" ]; then
 		cp -f "$path_podkop_config" "$path_podkop_config_backup"
 		wget -O "$path_podkop_config" "$URL/config_files/$nameFileReplacePodkop"
@@ -851,15 +849,11 @@ if [ -f "/etc/init.d/podkop" ]; then
 	fi
 else
 	printf "\033[32;1mInstall and configure PODKOP (a tool for point routing of traffic)? (y/n): \033[0m\n"
-	is_install_podkop="y"
-	read is_install_podkop
-
+	read -r is_install_podkop
 	if [ "$is_install_podkop" = "y" ] || [ "$is_install_podkop" = "Y" ]; then
 		DOWNLOAD_DIR="/tmp/podkop"
 		mkdir -p "$DOWNLOAD_DIR"
-		podkop_files="podkop_0.2.5-1_all.ipk
-luci-app-podkop_0.2.5_all.ipk
-luci-i18n-podkop-ru_0.2.5.ipk"
+		podkop_files="podkop_0.2.5-1_all.ipk luci-app-podkop_0.2.5_all.ipk luci-i18n-podkop-ru_0.2.5.ipk"
 		for file in $podkop_files; do
 			echo "Download $file..."
 			wget -q -O "$DOWNLOAD_DIR/$file" "$URL/podkop_packets/$file"
@@ -876,7 +870,7 @@ fi
 printf "\033[32;1mStart and enable service 'https-dns-proxy'...\033[0m\n"
 manage_package "https-dns-proxy" "enable" "start"
 
-# -- Правильная работа с crontab (создание файла если не существует)
+# Правильная работа с crontab (создание файла если не существует)
 if [ ! -f /etc/crontabs/root ]; then
 	touch /etc/crontabs/root
 fi
