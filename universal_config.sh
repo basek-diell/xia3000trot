@@ -616,22 +616,22 @@ while [ $currIter -lt $countRepeatAWGGen ] && [ "$isExit" = "0" ]; do
         printf "\033[32;1mRequest WARP config... Attempt #1\033[0m\n"
         result=$(requestConfWARP1)
         warpGen=$(check_request "$result" 1)
-        
+
         if [ "$warpGen" = "Error" ]; then
             printf "\033[32;1mRequest WARP config... Attempt #2\033[0m\n"
             result=$(requestConfWARP2)
             warpGen=$(check_request "$result" 2)
-            
+
             if [ "$warpGen" = "Error" ]; then
                 printf "\033[32;1mRequest WARP config... Attempt #3\033[0m\n"
                 result=$(requestConfWARP3)
                 warpGen=$(check_request "$result" 3)
-                
+
                 if [ "$warpGen" = "Error" ]; then
                     printf "\033[32;1mRequest WARP config... Attempt #4\033[0m\n"
                     result=$(requestConfWARP4)
                     warpGen=$(check_request "$result" 4)
-                    
+
                     if [ "$warpGen" = "Error" ]; then
                         warp_config="Error"
                     else
@@ -651,7 +651,6 @@ while [ $currIter -lt $countRepeatAWGGen ] && [ "$isExit" = "0" ]; do
             printf "\033[32;1mGenerate config AWG WARP failed...Try again later...\033[0m\n"
             isExit=2
         else
-            # Обрабатываем WARP конфиг через pipe вместо process substitution
             echo "$warp_config" | while IFS=' = ' read -r line; do
                 if echo "$line" | grep -q "="; then
                     key=$(echo "$line" | cut -d'=' -f1 | xargs)
@@ -707,7 +706,6 @@ while [ $currIter -lt $countRepeatAWGGen ] && [ "$isExit" = "0" ]; do
         uci set network.@${CONFIG_NAME}[-1].route_allowed_ips='0'
         uci commit network
 
-        # Firewall zone
         if ! uci show firewall | grep -q "@zone.*name='${ZONE_NAME}'"; then
             printf "\033[32;1mZone Create\033[0m\n"
             uci add firewall zone
@@ -761,7 +759,6 @@ while [ $currIter -lt $countRepeatAWGGen ] && [ "$isExit" = "0" ]; do
         fi
     fi
 done
-
 varByPass=0
 
 if [ "$isExit" = "1" ]
