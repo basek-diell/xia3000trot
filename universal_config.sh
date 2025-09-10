@@ -756,91 +756,101 @@ do
 done
 
 varByPass=0
+# -- Переменные
+URL="https://raw.githubusercontent.com/basek-diell/xia3000trot/refs/heads/main"
+path_podkop_config="/etc/config/podkop"
+path_podkop_config_backup="/root/podkop"
+PACKAGE="podkop"
+REQUIRED_VERSION="0.2.5-1"
 
-if [ "$isExit" = "1" ]
-then
+# -- Проверка результата AWG WARP
+if [ "$isExit" = "1" ]; then
 	printf "\033[32;1mAWG WARP well work...\033[0m\n"
 	varByPass=1
 else
-    printf "\033[32;1mAWG WARP not work...Try work youtubeunblock...Please wait...\033[0m\n"
+	printf "\033[32;1mAWG WARP not work...Try work youtubeunblock...Please wait...\033[0m\n"
 	install_youtubeunblock_packages
 	opkg upgrade youtubeUnblock
 	opkg upgrade luci-app-youtubeUnblock
-    manage_package "youtubeUnblock" "enable" "start"
+	manage_package "youtubeUnblock" "enable" "start"
 	wget -O "/etc/config/youtubeUnblock" "$URL/config_files/youtubeUnblockSecond"
-	service youtubeUnblock restart
+	if command -v service >/dev/null; then
+		service youtubeUnblock restart
+	fi
 	curl -f -o /dev/null -k --connect-to ::google.com -L -H "Host: mirror.gcr.io" --max-time 360 https://test.googlevideo.com/v2/cimg/android/blobs/sha256:6fd8bdac3da660bde7bd0b6f2b6a46e1b686afb74b9a4614def32532b73f5eaa
 
-	# Проверяем код выхода
 	if [ $? -eq 0 ]; then
 		printf "\033[32;1myoutubeUnblock well work...\033[0m\n"
 		varByPass=2
 	else
 		manage_package "youtubeUnblock" "disable" "stop"
 		printf "\033[32;1myoutubeUnblock not work...Try opera proxy...\033[0m\n"
-		service sing-box restart
-		sing-box tools fetch ifconfig.co -D /etc/sing-box/
+		if command -v service >/dev/null; then
+			service sing-box restart
+		fi
+		if command -v sing-box >/dev/null; then
+			sing-box tools fetch ifconfig.co -D /etc/sing-box/
+		fi
 		if [ $? -eq 0 ]; then
 			printf "\033[32;1mOpera proxy well work...\033[0m\n"
 			varByPass=3
 		else
-			printf "\033[32;1mOpera proxy not work...Try custom settings router to bypass the locks... Recomendation buy 'VPS' and up 'vless'\033[0m\n"
+			printf "\033[32;1mOpera proxy not work...Try custom settings router to bypass the locks... Recommendation: buy 'VPS' and set up 'vless'\033[0m\n"
 			exit 1
 		fi
 	fi
 fi
 
-printf  "\033[32;1mRestart service dnsmasq, odhcpd...\033[0m\n"
-service dnsmasq restart
-service odhcpd restart
-
-path_podkop_config="/etc/config/podkop"
-path_podkop_config_backup="/root/podkop"
-URL="https://raw.githubusercontent.com/basek-diell/xia3000trot/refs/heads/main"
-
-case $varByPass in
-1)
-	nameFileReplacePodkop="podkop"
-	printf  "\033[32;1mStop and disabled service 'youtubeUnblock' and 'ruantiblock'...\033[0m\n"
-	manage_package "youtubeUnblock" "disable" "stop"
-	manage_package "ruantiblock" "disable" "stop"
-	;;
-2)
-	nameFileReplacePodkop="podkopSecond"
-	printf  "\033[32;1mStop and disabled service 'ruantiblock'...\033[0m\n"
-	manage_package "ruantiblock" "disable" "stop"
-	;;
-3)
-	nameFileReplacePodkop="podkopSecondYoutube"
-	printf  "\033[32;1mStop and disabled service 'youtubeUnblock' and 'ruantiblock'...\033[0m\n"
-	manage_package "youtubeUnblock" "disable" "stop"
-	manage_package "ruantiblock" "disable" "stop"
-	;;
-*)
-	nameFileReplacePodkop="podkop"
-esac
-
-PACKAGE="podkop"
-REQUIRED_VERSION="0.2.5-1"
-
-INSTALLED_VERSION=$(opkg list-installed | grep "^$PACKAGE" | cut -d ' ' -f 3)
-if [ -n "$INSTALLED_VERSION" ] && [ "$INSTALLED_VERSION" != "$REQUIRED_VERSION" ]; then
-    echo "Version package $PACKAGE not equal $REQUIRED_VERSION. Removed packages..."
-    opkg remove --force-removal-of-dependent-packages $PACKAGE
+printf "\033[32;1mRestart service dnsmasq, odhcpd...\033[0m\n"
+if command -v service >/dev/null; then
+	service dnsmasq restart
+	service odhcpd restart
 fi
 
+# -- Выбор нужного конфига podkop в зависимости от обхода
+case $varByPass in
+	1)
+		nameFileReplacePodkop="podkop"
+		printf "\033[32;1mStop and disable service 'youtubeUnblock' and 'ruantiblock'...\033[0m\n"
+		manage_package "youtubeUnblock" "disable" "stop"
+		manage_package "ruantiblock" "disable" "stop"
+		;;
+	2)
+		nameFileReplacePodkop="podkopSecond"
+		printf "\033[32;1mStop and disable service 'ruantiblock'...\033[0m\n"
+		manage_package "ruantiblock" "disable" "stop"
+		;;
+	3)
+		nameFileReplacePodkop="podkopSecondYoutube"
+		printf "\033[32;1mStop and disable service 'youtubeUnblock' and 'ruantiblock'...\033[0m\n"
+		manage_package "youtubeUnblock" "disable" "stop"
+		manage_package "ruantiblock" "disable" "stop"
+		;;
+	*)
+		nameFileReplacePodkop="podkop"
+		;;
+esac
+
+# -- Проверка версии podkop
+INSTALLED_VERSION=$(opkg list-installed | grep "^$PACKAGE" | awk '{print $3}')
+if [ -n "$INSTALLED_VERSION" ] && [ "$INSTALLED_VERSION" != "$REQUIRED_VERSION" ]; then
+	echo "Version package $PACKAGE not equal $REQUIRED_VERSION. Removing package..."
+	opkg remove --force-removal-of-dependent-packages $PACKAGE
+fi
+
+# -- Установка или ре-конфигурирование podkop
 if [ -f "/etc/init.d/podkop" ]; then
-	printf "Podkop installed. Reconfigured on AWG WARP and Opera Proxy? (y/n): \n"
+	printf "Podkop installed. Reconfigure on AWG WARP and Opera Proxy? (y/n): \n"
 	is_reconfig_podkop="y"
 	read is_reconfig_podkop
 	if [ "$is_reconfig_podkop" = "y" ] || [ "$is_reconfig_podkop" = "Y" ]; then
 		cp -f "$path_podkop_config" "$path_podkop_config_backup"
-		wget -O "$path_podkop_config" "$URL/config_files/$nameFileReplacePodkop" 
+		wget -O "$path_podkop_config" "$URL/config_files/$nameFileReplacePodkop"
 		echo "Backup of your config in path '$path_podkop_config_backup'"
 		echo "Podkop reconfigured..."
 	fi
 else
-	printf "\033[32;1mInstall and configure PODKOP (a tool for point routing of traffic)?? (y/n): \033[0m\n"
+	printf "\033[32;1mInstall and configure PODKOP (a tool for point routing of traffic)? (y/n): \033[0m\n"
 	is_install_podkop="y"
 	read is_install_podkop
 
@@ -848,10 +858,9 @@ else
 		DOWNLOAD_DIR="/tmp/podkop"
 		mkdir -p "$DOWNLOAD_DIR"
 		podkop_files="podkop_0.2.5-1_all.ipk
-			luci-app-podkop_0.2.5_all.ipk
-			luci-i18n-podkop-ru_0.2.5.ipk"
-		for file in $podkop_files
-		do
+luci-app-podkop_0.2.5_all.ipk
+luci-i18n-podkop-ru_0.2.5.ipk"
+		for file in $podkop_files; do
 			echo "Download $file..."
 			wget -q -O "$DOWNLOAD_DIR/$file" "$URL/podkop_packets/$file"
 		done
@@ -859,37 +868,33 @@ else
 		opkg install $DOWNLOAD_DIR/luci-app-podkop*.ipk
 		opkg install $DOWNLOAD_DIR/luci-i18n-podkop-ru*.ipk
 		rm -f $DOWNLOAD_DIR/podkop*.ipk $DOWNLOAD_DIR/luci-app-podkop*.ipk $DOWNLOAD_DIR/luci-i18n-podkop-ru*.ipk
-		wget -O "$path_podkop_config" "$URL/config_files/$nameFileReplacePodkop" 
-		echo "Podkop installed.."
+		wget -O "$path_podkop_config" "$URL/config_files/$nameFileReplacePodkop"
+		echo "Podkop installed."
 	fi
 fi
 
-printf  "\033[32;1mStart and enable service 'https-dns-proxy'...\033[0m\n"
+printf "\033[32;1mStart and enable service 'https-dns-proxy'...\033[0m\n"
 manage_package "https-dns-proxy" "enable" "start"
 
-str=$(grep -i "0 4 \* \* \* wget -O - $URL/configure_zaprets.sh | sh" /etc/crontabs/root)
-if [ ! -z "$str" ]
-then
-	grep -v "0 4 \* \* \* wget -O - $URL/configure_zaprets.sh | sh" /etc/crontabs/root > /etc/crontabs/temp
-	cp -f "/etc/crontabs/temp" "/etc/crontabs/root"
-	rm -f "/etc/crontabs/temp"
+# -- Правильная работа с crontab (создание файла если не существует)
+if [ ! -f /etc/crontabs/root ]; then
+	touch /etc/crontabs/root
 fi
 
-#printf  "\033[32;1mRestart firewall and network...\033[0m\n"
-#service firewall restart
-#service network restart
+str=$(grep -i "0 4 \* \* \* wget -O - $URL/configure_zaprets.sh | sh" /etc/crontabs/root)
+if [ -n "$str" ]; then
+	grep -v "0 4 \* \* \* wget -O - $URL/configure_zaprets.sh | sh" /etc/crontabs/root > /etc/crontabs/temp
+	mv /etc/crontabs/temp /etc/crontabs/root
+fi
 
-# Отключаем интерфейс
-#ifdown $INTERFACE_NAME
-# Ждем несколько секунд (по желанию)
-#sleep 2
-# Включаем интерфейс
-#ifup $INTERFACE_NAME
+printf "\033[32;1mService Podkop and Sing-Box restart...\033[0m\n"
+if [ -f "/etc/init.d/sing-box" ]; then
+	service sing-box enable
+	service sing-box restart
+fi
+if [ -f "/etc/init.d/podkop" ]; then
+	service podkop enable
+	service podkop restart
+fi
 
-printf  "\033[32;1mService Podkop and Sing-Box restart...\033[0m\n"
-service sing-box enable
-service sing-box restart
-service podkop enable
-service podkop restart
-
-printf  "\033[32;1mConfigured completed...\033[0m\n"
+printf "\033[32;1mConfigured completed...\033[0m\n"
