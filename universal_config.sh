@@ -554,8 +554,6 @@ then
   uci commit firewall
 fi
 
-#!/bin/sh
-
 printf "\033[32;1mAutomatic generate config AmneziaWG WARP (n) or manual input parameters for AmneziaWG (y)...\033[0m\n"
 
 countRepeatAWGGen=2
