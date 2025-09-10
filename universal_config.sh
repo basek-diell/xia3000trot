@@ -501,8 +501,8 @@ echo "Installing opera-proxy..."
 opkg install $destination_file
 
 cat <<EOF > /etc/sing-box/config.json
-  {
-    "log": {
+{
+  "log": {
     "disabled": true,
     "level": "error"
   },
