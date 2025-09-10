@@ -1,9 +1,15 @@
 #!/bin/sh
 
-if opkg list-installed | grep -q luci-proto-amneziawg; then
-    echo "Removing conflicting package luci-proto-amneziawg..."
-    opkg remove luci-proto-amneziawg
-fi
+# Список пакетов для удаления перед установкой AWG WARP
+conflicting_packages="podkop luci-app-podkop luci-i18n-podkop-ru nextdns luci-app-nextdns luci-i18n-nextdns-ru luci-proto-amneziawg amneziawg-tools kmod-amneziawg"
+
+for pkg in $conflicting_packages; do
+    if opkg list-installed | grep -q "^$pkg"; then
+        echo "Removing conflicting package $pkg..."
+        opkg remove --force-removal-of-dependent-packages "$pkg"
+    fi
+done
+
 
 install_awg_packages() {
     # Получение pkgarch с наибольшим приоритетом
