@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 install_awg_packages() {
     # Получение pkgarch с наибольшим приоритетом
