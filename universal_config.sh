@@ -549,7 +549,7 @@ then
   uci commit firewall
 fi
 
-echo "Automatic generate config AmneziaWG WARP (n) or manual input parameters for AmneziaWG (y)..."
+printf "\033[32;1mAutomatic generate config AmneziaWG WARP (n) or manual input parameters for AmneziaWG (y)...\033[0m\n"
 countRepeatAWGGen=2
 echo "Input manual parameters AmneziaWG? (y/n): "
 read is_manual_input_parameters
