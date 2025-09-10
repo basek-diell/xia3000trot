@@ -62,34 +62,28 @@ install_awg_packages() {
     fi
     
     if opkg list-installed | grep -q luci-app-amneziawg; then
-    echo "luci-app-amneziawg already installed"
-else
-    # Удаляем конфликтующий пакет перед установкой
-    if opkg list-installed | grep -q luci-proto-amneziawg; then
-        echo "Removing conflicting luci-proto-amneziawg..."
-        opkg remove luci-proto-amneziawg
-    fi
-
-    LUCI_APP_AMNEZIAWG_FILENAME="luci-app-amneziawg${PKGPOSTFIX}"
-    DOWNLOAD_URL="${BASE_URL}v${VERSION}/${LUCI_APP_AMNEZIAWG_FILENAME}"
-    wget -O "$AWG_DIR/$LUCI_APP_AMNEZIAWG_FILENAME" "$DOWNLOAD_URL"
-
-    if [ $? -eq 0 ]; then
-        echo "luci-app-amneziawg file downloaded successfully"
+        echo "luci-app-amneziawg already installed"
     else
-        echo "Error downloading luci-app-amneziawg. Please, install luci-app-amneziawg manually and run the script again"
-        exit 1
-    fi
+        LUCI_APP_AMNEZIAWG_FILENAME="luci-app-amneziawg${PKGPOSTFIX}"
+        DOWNLOAD_URL="${BASE_URL}v${VERSION}/${LUCI_APP_AMNEZIAWG_FILENAME}"
+        wget -O "$AWG_DIR/$LUCI_APP_AMNEZIAWG_FILENAME" "$DOWNLOAD_URL"
 
-    opkg install "$AWG_DIR/$LUCI_APP_AMNEZIAWG_FILENAME"
+        if [ $? -eq 0 ]; then
+            echo "luci-app-amneziawg file downloaded successfully"
+        else
+            echo "Error downloading luci-app-amneziawg. Please, install luci-app-amneziawg manually and run the script again"
+            exit 1
+        fi
 
-    if [ $? -eq 0 ]; then
-        echo "luci-app-amneziawg file installed successfully"
-    else
-        echo "Error installing luci-app-amneziawg. Please, install luci-app-amneziawg manually and run the script again"
-        exit 1
+        opkg install "$AWG_DIR/$LUCI_APP_AMNEZIAWG_FILENAME"
+
+        if [ $? -eq 0 ]; then
+            echo "luci-app-amneziawg file downloaded successfully"
+        else
+            echo "Error installing luci-app-amneziawg. Please, install luci-app-amneziawg manually and run the script again"
+            exit 1
+        fi
     fi
-fi
 
     rm -rf "$AWG_DIR"
 }
@@ -304,7 +298,7 @@ checkAndAddDomainPermanentName()
 install_youtubeunblock_packages() {
     PKGARCH=$(opkg print-architecture | awk 'BEGIN {max=0} {if ($3 > max) {max = $3; arch = $2}} END {print arch}')
     VERSION=$(ubus call system board | jsonfilter -e '@.release.version')
-    BASE_URL="https://github.com/Waujito/youtubeUnblock/releases/download/v1.0.0/"
+    BASE_URL="https://github.com/Waujito/youtubeUnblock/releases/download/v1.1.0/"
   	PACK_NAME="youtubeUnblock"
 
     AWG_DIR="/tmp/$PACK_NAME"
@@ -332,7 +326,7 @@ install_youtubeunblock_packages() {
 			fi
 		done
 
-        YOUTUBEUNBLOCK_FILENAME="youtubeUnblock-1.0.0-10-f37c3dd-${PKGARCH}-openwrt-23.05.ipk"
+        YOUTUBEUNBLOCK_FILENAME="youtubeUnblock-1.1.0-10-f37c3dd-${PKGARCH}-openwrt-23.05.ipk"
         DOWNLOAD_URL="${BASE_URL}${YOUTUBEUNBLOCK_FILENAME}"
 		echo $DOWNLOAD_URL
         wget -O "$AWG_DIR/$YOUTUBEUNBLOCK_FILENAME" "$DOWNLOAD_URL"
@@ -359,7 +353,7 @@ install_youtubeunblock_packages() {
         echo "$PACK_NAME already installed"
     else
 		PACK_NAME="luci-app-youtubeUnblock"
-		YOUTUBEUNBLOCK_FILENAME="luci-app-youtubeUnblock-1.0.0-10-f37c3dd.ipk"
+		YOUTUBEUNBLOCK_FILENAME="luci-app-youtubeUnblock-1.1.0-10-f37c3dd.ipk"
         DOWNLOAD_URL="${BASE_URL}${YOUTUBEUNBLOCK_FILENAME}"
 		echo $DOWNLOAD_URL
         wget -O "$AWG_DIR/$YOUTUBEUNBLOCK_FILENAME" "$DOWNLOAD_URL"
@@ -501,8 +495,8 @@ echo "Installing opera-proxy..."
 opkg install $destination_file
 
 cat <<EOF > /etc/sing-box/config.json
-{
-  "log": {
+  {
+    "log": {
     "disabled": true,
     "level": "error"
   },
@@ -561,214 +555,307 @@ echo "Input manual parameters AmneziaWG? (y/n): "
 read is_manual_input_parameters
 currIter=0
 isExit=0
-
 while [ $currIter -lt $countRepeatAWGGen ] && [ "$isExit" = "0" ]
 do
-    currIter=$(expr $currIter + 1)
-    printf "\033[32;1mCreate and Check AWG WARP... Attempt #$currIter... Please wait...\033[0m\n"
-    if [ "$is_manual_input_parameters" = "y" ] || [ "$is_manual_input_parameters" = "Y" ]; then
-        echo "Enter the private key (from [Interface]):"
-        read -r PrivateKey
-        echo "Enter S1 value (from [Interface]):"
-        read -r S1
-        echo "Enter S2 value (from [Interface]):"
-        read -r S2
-        echo "Enter Jc value (from [Interface]):"
-        read -r Jc
-        echo "Enter Jmin value (from [Interface]):"
-        read -r Jmin
-        echo "Enter Jmax value (from [Interface]):"
-        read -r Jmax
-        echo "Enter H1 value (from [Interface]):"
-        read -r H1
-        echo "Enter H2 value (from [Interface]):"
-        read -r H2
-        echo "Enter H3 value (from [Interface]):"
-        read -r H3
-        echo "Enter H4 value (from [Interface]):"
-        read -r H4
+	currIter=$(( $currIter + 1 ))
+	printf "\033[32;1mCreate and Check AWG WARP... Attempt #$currIter... Please wait...\033[0m\n"
+	if [ "$is_manual_input_parameters" = "y" ] || [ "$is_manual_input_parameters" = "Y" ]
+	then
+		read -r -p "Enter the private key (from [Interface]):"$'\n' PrivateKey
+		read -r -p "Enter S1 value (from [Interface]):"$'\n' S1
+		read -r -p "Enter S2 value (from [Interface]):"$'\n' S2
+		read -r -p "Enter Jc value (from [Interface]):"$'\n' Jc
+		read -r -p "Enter Jmin value (from [Interface]):"$'\n' Jmin
+		read -r -p "Enter Jmax value (from [Interface]):"$'\n' Jmax
+		read -r -p "Enter H1 value (from [Interface]):"$'\n' H1
+		read -r -p "Enter H2 value (from [Interface]):"$'\n' H2
+		read -r -p "Enter H3 value (from [Interface]):"$'\n' H3
+		read -r -p "Enter H4 value (from [Interface]):"$'\n' H4
+		
+		while true; do
+			read -r -p "Enter internal IP address with subnet, example 192.168.100.5/24 (from [Interface]):"$'\n' Address
+			if echo "$Address" | egrep -oq '^([0-9]{1,3}\.){3}[0-9]{1,3}(/[0-9]+)?$'; then
+				break
+			else
+				echo "This IP is not valid. Please repeat"
+			fi
+		done
 
-        while true; do
-            echo "Enter internal IP address with subnet, example 192.168.100.5/24 (from [Interface]):"
-            read -r Address
-            if echo "$Address" | grep -E -oq '^([0-9]{1,3}\.){3}[0-9]{1,3}(/[0-9]+)?$'; then
-                break
-            else
-                echo "This IP is not valid. Please repeat"
-            fi
-        done
+		read -r -p "Enter the public key (from [Peer]):"$'\n' PublicKey
+		read -r -p "Enter Endpoint host without port (Domain or IP) (from [Peer]):"$'\n' EndpointIP
+		read -r -p "Enter Endpoint host port (from [Peer]) [51820]:"$'\n' EndpointPort
 
-        echo "Enter the public key (from [Peer]):"
-        read -r PublicKey
-        echo "Enter Endpoint host without port (Domain or IP) (from [Peer]):"
-        read -r EndpointIP
-        echo "Enter Endpoint host port (from [Peer]) [51820]:"
-        read -r EndpointPort
+		DNS="1.1.1.1"
+		MTU=1280
+		AllowedIPs="0.0.0.0/0"
+		isExit=1
+	else
+		warp_config="Error"
+		printf "\033[32;1mRequest WARP config... Attempt #1\033[0m\n"
+		result=$(requestConfWARP1)
+		warpGen=$(check_request "$result" 1)
+		if [ "$warpGen" = "Error" ]
+		then
+			printf "\033[32;1mRequest WARP config... Attempt #2\033[0m\n"
+			result=$(requestConfWARP2)
+			warpGen=$(check_request "$result" 2)
+			if [ "$warpGen" = "Error" ]
+			then
+				printf "\033[32;1mRequest WARP config... Attempt #3\033[0m\n"
+				result=$(requestConfWARP3)
+				warpGen=$(check_request "$result" 3)
+				if [ "$warpGen" = "Error" ]
+				then
+					printf "\033[32;1mRequest WARP config... Attempt #4\033[0m\n"
+					result=$(requestConfWARP4)
+					warpGen=$(check_request "$result" 4)
+					if [ "$warpGen" = "Error" ]
+					then
+						warp_config="Error"
+					else
+						warp_config=$warpGen
+					fi
+				else
+					warp_config=$warpGen
+				fi
+			else
+				warp_config=$warpGen
+			fi
+		else
+			warp_config=$warpGen
+		fi
+		
+		if [ "$warp_config" = "Error" ] 
+		then
+			printf "\033[32;1mGenerate config AWG WARP failed...Try again later...\033[0m\n"
+			isExit=2
+			#exit 1
+		else
+			while IFS=' = ' read -r line; do
+			if echo "$line" | grep -q "="; then
+				# Разделяем строку по первому вхождению "="
+				key=$(echo "$line" | cut -d'=' -f1 | xargs)  # Убираем пробелы
+				value=$(echo "$line" | cut -d'=' -f2- | xargs)  # Убираем пробелы
+				#echo "key = $key, value = $value"
+				eval "$key=\"$value\""
+			fi
+			done < <(echo "$warp_config")
 
-        DNS="1.1.1.1"
-        MTU=1280
-        AllowedIPs="0.0.0.0/0"
-        isExit=1
-    else
-        warp_config="Error"
-        printf "\033[32;1mRequest WARP config... Attempt #1\033[0m\n"
-        result=$(requestConfWARP1)
-        warpGen=$(check_request "$result" 1)
-        if [ "$warpGen" = "Error" ]; then
-            printf "\033[32;1mRequest WARP config... Attempt #2\033[0m\n"
-            result=$(requestConfWARP2)
-            warpGen=$(check_request "$result" 2)
-            if [ "$warpGen" = "Error" ]; then
-                printf "\033[32;1mRequest WARP config... Attempt #3\033[0m\n"
-                result=$(requestConfWARP3)
-                warpGen=$(check_request "$result" 3)
-                if [ "$warpGen" = "Error" ]; then
-                    printf "\033[32;1mRequest WARP config... Attempt #4\033[0m\n"
-                    result=$(requestConfWARP4)
-                    warpGen=$(check_request "$result" 4)
-                    if [ "$warpGen" = "Error" ]; then
-                        warp_config="Error"
-                    else
-                        warp_config=$warpGen
-                    fi
-                else
-                    warp_config=$warpGen
-                fi
-            else
-                warp_config=$warpGen
-            fi
-        else
-            warp_config=$warpGen
-        fi
+			#вытаскиваем нужные нам данные из распарсинного ответа
+			Address=$(echo "$Address" | cut -d',' -f1)
+			DNS=$(echo "$DNS" | cut -d',' -f1)
+			AllowedIPs=$(echo "$AllowedIPs" | cut -d',' -f1)
+			EndpointIP=$(echo "$Endpoint" | cut -d':' -f1)
+			EndpointPort=$(echo "$Endpoint" | cut -d':' -f2)
+		fi
+	fi
+	
+	if [ "$isExit" = "2" ] 
+	then
+		isExit=0
+	else
+		printf "\033[32;1mCreate and configure tunnel AmneziaWG WARP...\033[0m\n"
 
-        if [ "$warp_config" = "Error" ]; then
-            printf "\033[32;1mGenerate config AWG WARP failed...Try again later...\033[0m\n"
-            isExit=2
-        else
-            echo "$warp_config" | while IFS=' = ' read -r line; do
-                if echo "$line" | grep -q "="; then
-                    key=$(echo "$line" | cut -d'=' -f1 | xargs)
-                    value=$(echo "$line" | cut -d'=' -f2- | xargs)
-                    eval "$key=\"$value\""
-                fi
-            done
+		#задаём имя интерфейса
+		INTERFACE_NAME="awg10"
+		CONFIG_NAME="amneziawg_awg10"
+		PROTO="amneziawg"
+		ZONE_NAME="awg"
 
-            Address=$(echo "$Address" | cut -d',' -f1)
-            DNS=$(echo "$DNS" | cut -d',' -f1)
-            AllowedIPs=$(echo "$AllowedIPs" | cut -d',' -f1)
-            EndpointIP=$(echo "$Endpoint" | cut -d':' -f1)
-            EndpointPort=$(echo "$Endpoint" | cut -d':' -f2)
-        fi
-    fi
+		uci set network.${INTERFACE_NAME}=interface
+		uci set network.${INTERFACE_NAME}.proto=$PROTO
+		if ! uci show network | grep -q ${CONFIG_NAME}; then
+			uci add network ${CONFIG_NAME}
+		fi
+		uci set network.${INTERFACE_NAME}.private_key=$PrivateKey
+		uci del network.${INTERFACE_NAME}.addresses
+		uci add_list network.${INTERFACE_NAME}.addresses=$Address
+		uci set network.${INTERFACE_NAME}.mtu=$MTU
+		uci set network.${INTERFACE_NAME}.awg_jc=$Jc
+		uci set network.${INTERFACE_NAME}.awg_jmin=$Jmin
+		uci set network.${INTERFACE_NAME}.awg_jmax=$Jmax
+		uci set network.${INTERFACE_NAME}.awg_s1=$S1
+		uci set network.${INTERFACE_NAME}.awg_s2=$S2
+		uci set network.${INTERFACE_NAME}.awg_h1=$H1
+		uci set network.${INTERFACE_NAME}.awg_h2=$H2
+		uci set network.${INTERFACE_NAME}.awg_h3=$H3
+		uci set network.${INTERFACE_NAME}.awg_h4=$H4
+		uci set network.${INTERFACE_NAME}.nohostroute='1'
+		
+		uci set network.@${CONFIG_NAME}[-1].description="${INTERFACE_NAME}_peer"
+		uci set network.@${CONFIG_NAME}[-1].public_key=$PublicKey
+		uci set network.@${CONFIG_NAME}[-1].endpoint_host=$EndpointIP
+		uci set network.@${CONFIG_NAME}[-1].endpoint_port=$EndpointPort
+		uci set network.@${CONFIG_NAME}[-1].persistent_keepalive='25'
+		uci set network.@${CONFIG_NAME}[-1].allowed_ips='0.0.0.0/0'
+		uci set network.@${CONFIG_NAME}[-1].route_allowed_ips='0'
+		uci commit network
 
-    if [ "$isExit" = "2" ]; then
-        isExit=0
-    else
-        printf "\033[32;1mCreate and configure tunnel AmneziaWG WARP...\033[0m\n"
-        # ... дальнейшая конфигурация ...
-    fi
+		if ! uci show firewall | grep -q "@zone.*name='${ZONE_NAME}'"; then
+			printf "\033[32;1mZone Create\033[0m\n"
+			uci add firewall zone
+			uci set firewall.@zone[-1].name=$ZONE_NAME
+			uci set firewall.@zone[-1].network=$INTERFACE_NAME
+			uci set firewall.@zone[-1].forward='REJECT'
+			uci set firewall.@zone[-1].output='ACCEPT'
+			uci set firewall.@zone[-1].input='REJECT'
+			uci set firewall.@zone[-1].masq='1'
+			uci set firewall.@zone[-1].mtu_fix='1'
+			uci set firewall.@zone[-1].family='ipv4'
+			uci commit firewall
+		fi
+
+		if ! uci show firewall | grep -q "@forwarding.*name='${ZONE_NAME}'"; then
+			printf "\033[32;1mConfigured forwarding\033[0m\n"
+			uci add firewall forwarding
+			uci set firewall.@forwarding[-1]=forwarding
+			uci set firewall.@forwarding[-1].name="${ZONE_NAME}"
+			uci set firewall.@forwarding[-1].dest=${ZONE_NAME}
+			uci set firewall.@forwarding[-1].src='lan'
+			uci set firewall.@forwarding[-1].family='ipv4'
+			uci commit firewall
+		fi
+
+		# Получаем список всех зон
+		ZONES=$(uci show firewall | grep "zone$" | cut -d'=' -f1)
+		#echo $ZONES
+		# Циклически проходим по всем зонам
+		for zone in $ZONES; do
+		# Получаем имя зоны
+		CURR_ZONE_NAME=$(uci get $zone.name)
+		#echo $CURR_ZONE_NAME
+		# Проверяем, является ли это зона с именем "$ZONE_NAME"
+		if [ "$CURR_ZONE_NAME" = "$ZONE_NAME" ]; then
+			# Проверяем, существует ли интерфейс в зоне
+			if ! uci get $zone.network | grep -q "$INTERFACE_NAME"; then
+			# Добавляем интерфейс в зону
+			uci add_list $zone.network="$INTERFACE_NAME"
+			uci commit firewall
+			#echo "Интерфейс '$INTERFACE_NAME' добавлен в зону '$ZONE_NAME'"
+			fi
+		fi
+		done
+		if [ "$currIter" = "1" ]
+		then
+			service firewall restart
+		fi
+		#service firewall restart
+		#service network restart
+
+		# Отключаем интерфейс
+		ifdown $INTERFACE_NAME
+		# Включаем интерфейс
+		ifup $INTERFACE_NAME
+		printf "\033[32;1mWait up AWG WARP 10 second...\033[0m\n"
+		sleep 10
+		
+		pingAddress="8.8.8.8"
+		if ping -c 1 -I $INTERFACE_NAME $pingAddress >/dev/null 2>&1
+		then
+			isExit=1
+		else
+			isExit=0
+		fi
+	fi
 done
 
 varByPass=0
-URL="https://raw.githubusercontent.com/basek-diell/xia3000trot/refs/heads/main"
-path_podkop_config="/etc/config/podkop"
-path_podkop_config_backup="/root/podkop"
-PACKAGE="podkop"
-REQUIRED_VERSION="0.2.5-1"
 
-# Проверка результата AWG WARP
-if [ "$isExit" = "1" ]; then
+if [ "$isExit" = "1" ]
+then
 	printf "\033[32;1mAWG WARP well work...\033[0m\n"
 	varByPass=1
 else
-	printf "\033[32;1mAWG WARP not work...Try work youtubeunblock...Please wait...\033[0m\n"
+    printf "\033[32;1mAWG WARP not work...Try work youtubeunblock...Please wait...\033[0m\n"
 	install_youtubeunblock_packages
 	opkg upgrade youtubeUnblock
 	opkg upgrade luci-app-youtubeUnblock
-	manage_package "youtubeUnblock" "enable" "start"
+    manage_package "youtubeUnblock" "enable" "start"
 	wget -O "/etc/config/youtubeUnblock" "$URL/config_files/youtubeUnblockSecond"
-	if command -v service >/dev/null; then
-		service youtubeUnblock restart
-	fi
+	service youtubeUnblock restart
 	curl -f -o /dev/null -k --connect-to ::google.com -L -H "Host: mirror.gcr.io" --max-time 360 https://test.googlevideo.com/v2/cimg/android/blobs/sha256:6fd8bdac3da660bde7bd0b6f2b6a46e1b686afb74b9a4614def32532b73f5eaa
 
+	# Проверяем код выхода
 	if [ $? -eq 0 ]; then
 		printf "\033[32;1myoutubeUnblock well work...\033[0m\n"
 		varByPass=2
 	else
 		manage_package "youtubeUnblock" "disable" "stop"
 		printf "\033[32;1myoutubeUnblock not work...Try opera proxy...\033[0m\n"
-		if command -v service >/dev/null; then
-			service sing-box restart
-		fi
-		if command -v sing-box >/dev/null; then
-			sing-box tools fetch ifconfig.co -D /etc/sing-box/
-		fi
+		service sing-box restart
+		sing-box tools fetch ifconfig.co -D /etc/sing-box/
 		if [ $? -eq 0 ]; then
 			printf "\033[32;1mOpera proxy well work...\033[0m\n"
 			varByPass=3
 		else
-			printf "\033[32;1mOpera proxy not work...Try custom settings router to bypass the locks... Recommendation: buy 'VPS' and set up 'vless'\033[0m\n"
+			printf "\033[32;1mOpera proxy not work...Try custom settings router to bypass the locks... Recomendation buy 'VPS' and up 'vless'\033[0m\n"
 			exit 1
 		fi
 	fi
 fi
 
-printf "\033[32;1mRestart service dnsmasq, odhcpd...\033[0m\n"
-if command -v service >/dev/null; then
-	service dnsmasq restart
-	service odhcpd restart
-fi
+printf  "\033[32;1mRestart service dnsmasq, odhcpd...\033[0m\n"
+service dnsmasq restart
+service odhcpd restart
 
-# Выбор нужного конфига podkop
+path_podkop_config="/etc/config/podkop"
+path_podkop_config_backup="/root/podkop"
+URL="https://raw.githubusercontent.com/basek-diell/xia3000trot/refs/heads/main"
+
 case $varByPass in
-	1)
-		nameFileReplacePodkop="podkop"
-		printf "\033[32;1mStop and disable service 'youtubeUnblock' and 'ruantiblock'...\033[0m\n"
-		manage_package "youtubeUnblock" "disable" "stop"
-		manage_package "ruantiblock" "disable" "stop"
-		;;
-	2)
-		nameFileReplacePodkop="podkopSecond"
-		printf "\033[32;1mStop and disable service 'ruantiblock'...\033[0m\n"
-		manage_package "ruantiblock" "disable" "stop"
-		;;
-	3)
-		nameFileReplacePodkop="podkopSecondYoutube"
-		printf "\033[32;1mStop and disable service 'youtubeUnblock' and 'ruantiblock'...\033[0m\n"
-		manage_package "youtubeUnblock" "disable" "stop"
-		manage_package "ruantiblock" "disable" "stop"
-		;;
-	*)
-		nameFileReplacePodkop="podkop"
-		;;
+1)
+	nameFileReplacePodkop="podkop"
+	printf  "\033[32;1mStop and disabled service 'youtubeUnblock' and 'ruantiblock'...\033[0m\n"
+	manage_package "youtubeUnblock" "disable" "stop"
+	manage_package "ruantiblock" "disable" "stop"
+	;;
+2)
+	nameFileReplacePodkop="podkopSecond"
+	printf  "\033[32;1mStop and disabled service 'ruantiblock'...\033[0m\n"
+	manage_package "ruantiblock" "disable" "stop"
+	;;
+3)
+	nameFileReplacePodkop="podkopSecondYoutube"
+	printf  "\033[32;1mStop and disabled service 'youtubeUnblock' and 'ruantiblock'...\033[0m\n"
+	manage_package "youtubeUnblock" "disable" "stop"
+	manage_package "ruantiblock" "disable" "stop"
+	;;
+*)
+	nameFileReplacePodkop="podkop"
 esac
 
-# Проверка версии podkop
-INSTALLED_VERSION=$(opkg list-installed | grep "^$PACKAGE" | awk '{print $3}')
+PACKAGE="podkop"
+REQUIRED_VERSION="0.2.5-1"
+
+INSTALLED_VERSION=$(opkg list-installed | grep "^$PACKAGE" | cut -d ' ' -f 3)
 if [ -n "$INSTALLED_VERSION" ] && [ "$INSTALLED_VERSION" != "$REQUIRED_VERSION" ]; then
-	echo "Version package $PACKAGE not equal $REQUIRED_VERSION. Removing package..."
-	opkg remove --force-removal-of-dependent-packages $PACKAGE
+    echo "Version package $PACKAGE not equal $REQUIRED_VERSION. Removed packages..."
+    opkg remove --force-removal-of-dependent-packages $PACKAGE
 fi
 
-# Установка или ре-конфигурирование podkop
 if [ -f "/etc/init.d/podkop" ]; then
-	printf "Podkop installed. Reconfigure on AWG WARP and Opera Proxy? (y/n): \n"
-	read -r is_reconfig_podkop
+	printf "Podkop installed. Reconfigured on AWG WARP and Opera Proxy? (y/n): \n"
+	is_reconfig_podkop="y"
+	read is_reconfig_podkop
 	if [ "$is_reconfig_podkop" = "y" ] || [ "$is_reconfig_podkop" = "Y" ]; then
 		cp -f "$path_podkop_config" "$path_podkop_config_backup"
-		wget -O "$path_podkop_config" "$URL/config_files/$nameFileReplacePodkop"
+		wget -O "$path_podkop_config" "$URL/config_files/$nameFileReplacePodkop" 
 		echo "Backup of your config in path '$path_podkop_config_backup'"
 		echo "Podkop reconfigured..."
 	fi
 else
-	printf "\033[32;1mInstall and configure PODKOP (a tool for point routing of traffic)? (y/n): \033[0m\n"
-	read -r is_install_podkop
+	printf "\033[32;1mInstall and configure PODKOP (a tool for point routing of traffic)?? (y/n): \033[0m\n"
+	is_install_podkop="y"
+	read is_install_podkop
+
 	if [ "$is_install_podkop" = "y" ] || [ "$is_install_podkop" = "Y" ]; then
 		DOWNLOAD_DIR="/tmp/podkop"
 		mkdir -p "$DOWNLOAD_DIR"
-		podkop_files="podkop_0.2.5-1_all.ipk luci-app-podkop_0.2.5_all.ipk luci-i18n-podkop-ru_0.2.5.ipk"
-		for file in $podkop_files; do
+		podkop_files="podkop_0.2.5-1_all.ipk
+			luci-app-podkop_0.2.5_all.ipk
+			luci-i18n-podkop-ru_0.2.5.ipk"
+		for file in $podkop_files
+		do
 			echo "Download $file..."
 			wget -q -O "$DOWNLOAD_DIR/$file" "$URL/podkop_packets/$file"
 		done
@@ -776,33 +863,37 @@ else
 		opkg install $DOWNLOAD_DIR/luci-app-podkop*.ipk
 		opkg install $DOWNLOAD_DIR/luci-i18n-podkop-ru*.ipk
 		rm -f $DOWNLOAD_DIR/podkop*.ipk $DOWNLOAD_DIR/luci-app-podkop*.ipk $DOWNLOAD_DIR/luci-i18n-podkop-ru*.ipk
-		wget -O "$path_podkop_config" "$URL/config_files/$nameFileReplacePodkop"
-		echo "Podkop installed."
+		wget -O "$path_podkop_config" "$URL/config_files/$nameFileReplacePodkop" 
+		echo "Podkop installed.."
 	fi
 fi
 
-printf "\033[32;1mStart and enable service 'https-dns-proxy'...\033[0m\n"
+printf  "\033[32;1mStart and enable service 'https-dns-proxy'...\033[0m\n"
 manage_package "https-dns-proxy" "enable" "start"
 
-# Правильная работа с crontab (создание файла если не существует)
-if [ ! -f /etc/crontabs/root ]; then
-	touch /etc/crontabs/root
-fi
-
 str=$(grep -i "0 4 \* \* \* wget -O - $URL/configure_zaprets.sh | sh" /etc/crontabs/root)
-if [ -n "$str" ]; then
+if [ ! -z "$str" ]
+then
 	grep -v "0 4 \* \* \* wget -O - $URL/configure_zaprets.sh | sh" /etc/crontabs/root > /etc/crontabs/temp
-	mv /etc/crontabs/temp /etc/crontabs/root
+	cp -f "/etc/crontabs/temp" "/etc/crontabs/root"
+	rm -f "/etc/crontabs/temp"
 fi
 
-printf "\033[32;1mService Podkop and Sing-Box restart...\033[0m\n"
-if [ -f "/etc/init.d/sing-box" ]; then
-	service sing-box enable
-	service sing-box restart
-fi
-if [ -f "/etc/init.d/podkop" ]; then
-	service podkop enable
-	service podkop restart
-fi
+#printf  "\033[32;1mRestart firewall and network...\033[0m\n"
+#service firewall restart
+#service network restart
 
-printf "\033[32;1mConfigured completed...\033[0m\n"
+# Отключаем интерфейс
+#ifdown $INTERFACE_NAME
+# Ждем несколько секунд (по желанию)
+#sleep 2
+# Включаем интерфейс
+#ifup $INTERFACE_NAME
+
+printf  "\033[32;1mService Podkop and Sing-Box restart...\033[0m\n"
+service sing-box enable
+service sing-box restart
+service podkop enable
+service podkop restart
+
+printf  "\033[32;1mConfigured completed...\033[0m\n"
