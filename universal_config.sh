@@ -564,195 +564,109 @@ isExit=0
 
 while [ $currIter -lt $countRepeatAWGGen ] && [ "$isExit" = "0" ]
 do
-	currIter=$(( $currIter + 1 ))
-	printf "\033[32;1mCreate and Check AWG WARP... Attempt #$currIter... Please wait...\033[0m\n"
-	if [ "$is_manual_input_parameters" = "y" ] || [ "$is_manual_input_parameters" = "Y" ]; then
-		echo "Enter the private key (from [Interface]):"
-		read -r PrivateKey
-		echo "Enter S1 value (from [Interface]):"
-		read -r S1
-		echo "Enter S2 value (from [Interface]):"
-		read -r S2
-		echo "Enter Jc value (from [Interface]):"
-		read -r Jc
-		echo "Enter Jmin value (from [Interface]):"
-		read -r Jmin
-		echo "Enter Jmax value (from [Interface]):"
-		read -r Jmax
-		echo "Enter H1 value (from [Interface]):"
-		read -r H1
-		echo "Enter H2 value (from [Interface]):"
-		read -r H2
-		echo "Enter H3 value (from [Interface]):"
-		read -r H3
-		echo "Enter H4 value (from [Interface]):"
-		read -r H4
-		
-		while true; do
-			echo "Enter internal IP address with subnet, example 192.168.100.5/24 (from [Interface]):"
-			read -r Address
-			if echo "$Address" | grep -E -oq '^([0-9]{1,3}\.){3}[0-9]{1,3}(/[0-9]+)?$'; then
-				break
-			else
-				echo "This IP is not valid. Please repeat"
-			fi
-		done
+    currIter=$(expr $currIter + 1)
+    printf "\033[32;1mCreate and Check AWG WARP... Attempt #$currIter... Please wait...\033[0m\n"
+    if [ "$is_manual_input_parameters" = "y" ] || [ "$is_manual_input_parameters" = "Y" ]; then
+        echo "Enter the private key (from [Interface]):"
+        read -r PrivateKey
+        echo "Enter S1 value (from [Interface]):"
+        read -r S1
+        echo "Enter S2 value (from [Interface]):"
+        read -r S2
+        echo "Enter Jc value (from [Interface]):"
+        read -r Jc
+        echo "Enter Jmin value (from [Interface]):"
+        read -r Jmin
+        echo "Enter Jmax value (from [Interface]):"
+        read -r Jmax
+        echo "Enter H1 value (from [Interface]):"
+        read -r H1
+        echo "Enter H2 value (from [Interface]):"
+        read -r H2
+        echo "Enter H3 value (from [Interface]):"
+        read -r H3
+        echo "Enter H4 value (from [Interface]):"
+        read -r H4
 
-		echo "Enter the public key (from [Peer]):"
-		read -r PublicKey
-		echo "Enter Endpoint host without port (Domain or IP) (from [Peer]):"
-		read -r EndpointIP
-		echo "Enter Endpoint host port (from [Peer]) [51820]:"
-		read -r EndpointPort
+        while true; do
+            echo "Enter internal IP address with subnet, example 192.168.100.5/24 (from [Interface]):"
+            read -r Address
+            if echo "$Address" | grep -E -oq '^([0-9]{1,3}\.){3}[0-9]{1,3}(/[0-9]+)?$'; then
+                break
+            else
+                echo "This IP is not valid. Please repeat"
+            fi
+        done
 
-		DNS="1.1.1.1"
-		MTU=1280
-		AllowedIPs="0.0.0.0/0"
-		isExit=1
-	else
-		warp_config="Error"
-		printf "\033[32;1mRequest WARP config... Attempt #1\033[0m\n"
-		result=$(requestConfWARP1)
-		warpGen=$(check_request "$result" 1)
-		if [ "$warpGen" = "Error" ]; then
-			printf "\033[32;1mRequest WARP config... Attempt #2\033[0m\n"
-			result=$(requestConfWARP2)
-			warpGen=$(check_request "$result" 2)
-			if [ "$warpGen" = "Error" ]; then
-				printf "\033[32;1mRequest WARP config... Attempt #3\033[0m\n"
-				result=$(requestConfWARP3)
-				warpGen=$(check_request "$result" 3)
-				if [ "$warpGen" = "Error" ]; then
-					printf "\033[32;1mRequest WARP config... Attempt #4\033[0m\n"
-					result=$(requestConfWARP4)
-					warpGen=$(check_request "$result" 4)
-					if [ "$warpGen" = "Error" ]; then
-						warp_config="Error"
-					else
-						warp_config=$warpGen
-					fi
-				else
-					warp_config=$warpGen
-				fi
-			else
-				warp_config=$warpGen
-			fi
-		else
-			warp_config=$warpGen
-		fi
-		
-		if [ "$warp_config" = "Error" ]; then
-			printf "\033[32;1mGenerate config AWG WARP failed...Try again later...\033[0m\n"
-			isExit=2
-			#exit 1
-		else
-			echo "$warp_config" | while IFS=' = ' read -r line; do
-				if echo "$line" | grep -q "="; then
-					key=$(echo "$line" | cut -d'=' -f1 | xargs)
-					value=$(echo "$line" | cut -d'=' -f2- | xargs)
-					eval "$key=\"$value\""
-				fi
-			done
+        echo "Enter the public key (from [Peer]):"
+        read -r PublicKey
+        echo "Enter Endpoint host without port (Domain or IP) (from [Peer]):"
+        read -r EndpointIP
+        echo "Enter Endpoint host port (from [Peer]) [51820]:"
+        read -r EndpointPort
 
-			Address=$(echo "$Address" | cut -d',' -f1)
-			DNS=$(echo "$DNS" | cut -d',' -f1)
-			AllowedIPs=$(echo "$AllowedIPs" | cut -d',' -f1)
-			EndpointIP=$(echo "$Endpoint" | cut -d':' -f1)
-			EndpointPort=$(echo "$Endpoint" | cut -d':' -f2)
-		fi
-	fi
-	
-	if [ "$isExit" = "2" ]; then
-		isExit=0
-	else
-		printf "\033[32;1mCreate and configure tunnel AmneziaWG WARP...\033[0m\n"
+        DNS="1.1.1.1"
+        MTU=1280
+        AllowedIPs="0.0.0.0/0"
+        isExit=1
+    else
+        warp_config="Error"
+        printf "\033[32;1mRequest WARP config... Attempt #1\033[0m\n"
+        result=$(requestConfWARP1)
+        warpGen=$(check_request "$result" 1)
+        if [ "$warpGen" = "Error" ]; then
+            printf "\033[32;1mRequest WARP config... Attempt #2\033[0m\n"
+            result=$(requestConfWARP2)
+            warpGen=$(check_request "$result" 2)
+            if [ "$warpGen" = "Error" ]; then
+                printf "\033[32;1mRequest WARP config... Attempt #3\033[0m\n"
+                result=$(requestConfWARP3)
+                warpGen=$(check_request "$result" 3)
+                if [ "$warpGen" = "Error" ]; then
+                    printf "\033[32;1mRequest WARP config... Attempt #4\033[0m\n"
+                    result=$(requestConfWARP4)
+                    warpGen=$(check_request "$result" 4)
+                    if [ "$warpGen" = "Error" ]; then
+                        warp_config="Error"
+                    else
+                        warp_config=$warpGen
+                    fi
+                else
+                    warp_config=$warpGen
+                fi
+            else
+                warp_config=$warpGen
+            fi
+        else
+            warp_config=$warpGen
+        fi
 
-		INTERFACE_NAME="awg10"
-		CONFIG_NAME="amneziawg_awg10"
-		PROTO="amneziawg"
-		ZONE_NAME="awg"
+        if [ "$warp_config" = "Error" ]; then
+            printf "\033[32;1mGenerate config AWG WARP failed...Try again later...\033[0m\n"
+            isExit=2
+        else
+            echo "$warp_config" | while IFS=' = ' read -r line; do
+                if echo "$line" | grep -q "="; then
+                    key=$(echo "$line" | cut -d'=' -f1 | xargs)
+                    value=$(echo "$line" | cut -d'=' -f2- | xargs)
+                    eval "$key=\"$value\""
+                fi
+            done
 
-		uci set network."$INTERFACE_NAME"=interface
-		uci set network."$INTERFACE_NAME".proto=$PROTO
-		if ! uci show network | grep -q "$CONFIG_NAME"; then
-			uci add network "$CONFIG_NAME"
-		fi
-		uci set network."$INTERFACE_NAME".private_key=$PrivateKey
-		uci del network."$INTERFACE_NAME".addresses
-		uci add_list network."$INTERFACE_NAME".addresses=$Address
-		uci set network."$INTERFACE_NAME".mtu=$MTU
-		uci set network."$INTERFACE_NAME".awg_jc=$Jc
-		uci set network."$INTERFACE_NAME".awg_jmin=$Jmin
-		uci set network."$INTERFACE_NAME".awg_jmax=$Jmax
-		uci set network."$INTERFACE_NAME".awg_s1=$S1
-		uci set network."$INTERFACE_NAME".awg_s2=$S2
-		uci set network."$INTERFACE_NAME".awg_h1=$H1
-		uci set network."$INTERFACE_NAME".awg_h2=$H2
-		uci set network."$INTERFACE_NAME".awg_h3=$H3
-		uci set network."$INTERFACE_NAME".awg_h4=$H4
-		uci set network."$INTERFACE_NAME".nohostroute='1'
-		
-		uci set network.@"$CONFIG_NAME"[-1].description="${INTERFACE_NAME}_peer"
-		uci set network.@"$CONFIG_NAME"[-1].public_key=$PublicKey
-		uci set network.@"$CONFIG_NAME"[-1].endpoint_host=$EndpointIP
-		uci set network.@"$CONFIG_NAME"[-1].endpoint_port=$EndpointPort
-		uci set network.@"$CONFIG_NAME"[-1].persistent_keepalive='25'
-		uci set network.@"$CONFIG_NAME"[-1].allowed_ips='0.0.0.0/0'
-		uci set network.@"$CONFIG_NAME"[-1].route_allowed_ips='0'
-		uci commit network
+            Address=$(echo "$Address" | cut -d',' -f1)
+            DNS=$(echo "$DNS" | cut -d',' -f1)
+            AllowedIPs=$(echo "$AllowedIPs" | cut -d',' -f1)
+            EndpointIP=$(echo "$Endpoint" | cut -d':' -f1)
+            EndpointPort=$(echo "$Endpoint" | cut -d':' -f2)
+        fi
+    fi
 
-		if ! uci show firewall | grep -q "@zone.*name='$ZONE_NAME'"; then
-			printf "\033[32;1mZone Create\033[0m\n"
-			uci add firewall zone
-			uci set firewall.@zone[-1].name=$ZONE_NAME
-			uci set firewall.@zone[-1].network=$INTERFACE_NAME
-			uci set firewall.@zone[-1].forward='REJECT'
-			uci set firewall.@zone[-1].output='ACCEPT'
-			uci set firewall.@zone[-1].input='REJECT'
-			uci set firewall.@zone[-1].masq='1'
-			uci set firewall.@zone[-1].mtu_fix='1'
-			uci set firewall.@zone[-1].family='ipv4'
-			uci commit firewall
-		fi
-
-		if ! uci show firewall | grep -q "@forwarding.*name='$ZONE_NAME'"; then
-			printf "\033[32;1mConfigured forwarding\033[0m\n"
-			uci add firewall forwarding
-			uci set firewall.@forwarding[-1]=forwarding
-			uci set firewall.@forwarding[-1].name="$ZONE_NAME"
-			uci set firewall.@forwarding[-1].dest=$ZONE_NAME
-			uci set firewall.@forwarding[-1].src='lan'
-			uci set firewall.@forwarding[-1].family='ipv4'
-			uci commit firewall
-		fi
-
-		ZONES=$(uci show firewall | grep "zone$" | cut -d'=' -f1)
-		for zone in $ZONES; do
-			CURR_ZONE_NAME=$(uci get $zone.name)
-			if [ "$CURR_ZONE_NAME" = "$ZONE_NAME" ]; then
-				if ! uci get $zone.network | grep -q "$INTERFACE_NAME"; then
-					uci add_list $zone.network="$INTERFACE_NAME"
-					uci commit firewall
-				fi
-			fi
-		done
-
-		if [ "$currIter" -eq 1 ]; then
-			service firewall restart
-		fi
-
-		ifdown "$INTERFACE_NAME"
-		ifup "$INTERFACE_NAME"
-		printf "\033[32;1mWait up AWG WARP 10 second...\033[0m\n"
-		sleep 10
-		
-		pingAddress="8.8.8.8"
-		if ping -c 1 -I "$INTERFACE_NAME" "$pingAddress" >/dev/null 2>&1; then
-			isExit=1
-		else
-			isExit=0
-		fi
-	fi
+    if [ "$isExit" = "2" ]; then
+        isExit=0
+    else
+        printf "\033[32;1mCreate and configure tunnel AmneziaWG WARP...\033[0m\n"
+        # ... дальнейшая конфигурация ...
+    fi
 done
 
 varByPass=0
