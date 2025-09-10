@@ -2,10 +2,8 @@
 # Остановка сервисов (если есть)
  /etc/init.d/nextdns stop 2>/dev/null
  /etc/init.d/podkop stop 2>/dev/null
-
 # Удаление пакетов через opkg
 opkg remove --force-depends podkop luci-app-podkop luci-i18n-podkop-ru luci-proto-amneziawg nextdns luci-app-nextdns luci-i18n-nextdns-ru
-
 # Удаление возможных оставшихся файлов и настроек
 rm -rf /etc/config/podkop \
        /etc/config/nextdns \
@@ -17,7 +15,6 @@ rm -rf /etc/config/podkop \
        /usr/lib/lua/luci/model/cbi/nextdns.lua \
        /usr/lib/lua/luci/view/podkop \
        /usr/lib/lua/luci/view/nextdns
-
 # Обновляем настройки luci и перезагружаем uhttpd, чтобы изменения отобразились
 /etc/init.d/uhttpd reload
 
