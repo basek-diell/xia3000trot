@@ -1,5 +1,4 @@
 #!/bin/sh
-
 # Остановка сервисов (если есть)
  /etc/init.d/nextdns stop 2>/dev/null
  /etc/init.d/podkop stop 2>/dev/null
@@ -21,10 +20,7 @@ rm -rf /etc/config/podkop \
 
 # Обновляем настройки luci и перезагружаем uhttpd, чтобы изменения отобразились
 /etc/init.d/uhttpd reload
-
 exit 0
-
-fi
 
 install_awg_packages() {
     # Получение pkgarch с наибольшим приоритетом
