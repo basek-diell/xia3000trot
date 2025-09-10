@@ -317,7 +317,7 @@ checkAndAddDomainPermanentName()
 install_youtubeunblock_packages() {
     PKGARCH=$(opkg print-architecture | awk 'BEGIN {max=0} {if ($3 > max) {max = $3; arch = $2}} END {print arch}')
     VERSION=$(ubus call system board | jsonfilter -e '@.release.version')
-    BASE_URL="https://github.com/Waujito/youtubeUnblock/releases/download/v1.1.0/"
+    BASE_URL="https://github.com/Waujito/youtubeUnblock/releases/download/v1.0.0/"
   	PACK_NAME="youtubeUnblock"
 
     AWG_DIR="/tmp/$PACK_NAME"
@@ -345,7 +345,7 @@ install_youtubeunblock_packages() {
 			fi
 		done
 
-        YOUTUBEUNBLOCK_FILENAME="youtubeUnblock-1.1.0-10-f37c3dd-${PKGARCH}-openwrt-23.05.ipk"
+        YOUTUBEUNBLOCK_FILENAME="youtubeUnblock-1.0.0-10-f37c3dd-${PKGARCH}-openwrt-23.05.ipk"
         DOWNLOAD_URL="${BASE_URL}${YOUTUBEUNBLOCK_FILENAME}"
 		echo $DOWNLOAD_URL
         wget -O "$AWG_DIR/$YOUTUBEUNBLOCK_FILENAME" "$DOWNLOAD_URL"
@@ -372,7 +372,7 @@ install_youtubeunblock_packages() {
         echo "$PACK_NAME already installed"
     else
 		PACK_NAME="luci-app-youtubeUnblock"
-		YOUTUBEUNBLOCK_FILENAME="luci-app-youtubeUnblock-1.1.0-10-f37c3dd.ipk"
+		YOUTUBEUNBLOCK_FILENAME="luci-app-youtubeUnblock-1.0.0-10-f37c3dd.ipk"
         DOWNLOAD_URL="${BASE_URL}${YOUTUBEUNBLOCK_FILENAME}"
 		echo $DOWNLOAD_URL
         wget -O "$AWG_DIR/$YOUTUBEUNBLOCK_FILENAME" "$DOWNLOAD_URL"
