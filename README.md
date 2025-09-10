@@ -9,7 +9,7 @@
 
 **Установка**
 ```sh
-wget -O - https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main/configure_zaprets.sh | sh
+wget -O - https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main/universal_config.sh | sh
 ```
 **Откат**
 ```sh
