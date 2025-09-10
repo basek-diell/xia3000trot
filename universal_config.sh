@@ -383,10 +383,6 @@ opkg update
 
 checkPackageAndInstall "coreutils-base64" "1"
 
-encoded_code="IyEvYmluL3NoCgojbS0tIE1vZGVsIGУ9dmljZQptb2RlbD0kKGNhdCAvdG1wL3N5c2luZm8vbW9kZWwpCgojIFByb3dlcmNhIG5hIG1vZGVsIFJvdXRlcmljaCAtIHVibmV0bywgZnJvbmQgdG8gc2NyaXB0IG5lIGJlcnVlbCBldmFsdWF0ZWQKaWYgZmFsc2U7IHRoZW4KICMgZWNobyAiVGhpcyBzY3JpcHQgZm9yIHJvdXRlcnMgUm91dGVyaWNoLi4uIElmIHlvdSB3YW50IHRvIHVzZSBpdCwgd3JpdGUgdG8gdGhlIGVwIGNoYXQgVEcgQHJvdXRlcmljaCIKICBlY2hvICJEZXZpY2UgbW9kZWw6ICRtb2RlbCAtIHByb3ZlcmthIHJvYWRpbmcsIHByb2RvbGplbSB2dXplbCBldmFsdWF0aW9uZSBzY3JpcHQi"
-eval "$(echo "$encoded_code" | base64 --decode)"
-
-
 #проверка и установка пакетов AmneziaWG
 install_awg_packages
 
@@ -457,7 +453,7 @@ firewall
 https-dns-proxy
 youtubeUnblock
 dhcp"
-URL="https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main"
+URL="https://raw.githubusercontent.com/basek-diell/xia3000trot/refs/heads/main"
 
 checkPackageAndInstall "https-dns-proxy" "0"
 
@@ -804,7 +800,7 @@ service odhcpd restart
 
 path_podkop_config="/etc/config/podkop"
 path_podkop_config_backup="/root/podkop"
-URL="https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main"
+URL="https://raw.githubusercontent.com/basek-diell/xia3000trot/refs/heads/main"
 
 case $varByPass in
 1)
