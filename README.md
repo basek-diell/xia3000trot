@@ -30,3 +30,4 @@ wget -O - https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/re
 ```sh
 wget -O - https://raw.githubusercontent.com/routerich/RouterichAX3000_configs/refs/heads/main/universal_config.sh | sh
 ```
+
