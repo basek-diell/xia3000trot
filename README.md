@@ -9,8 +9,7 @@
 
 **Установка**
 ```sh
-wget -O - https://raw.githubusercontent.com/basek-diell/xia3000trot
-/refs/heads/main/universal_config.sh | sh
+wget -O - https://raw.githubusercontent.com/basek-diell/xia3000trot/refs/heads/main/universal_config.sh | sh
 ```
 **Откат**
 ```sh
