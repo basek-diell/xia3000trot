@@ -20,7 +20,6 @@ rm -rf /etc/config/podkop \
 
 # Обновляем настройки luci и перезагружаем uhttpd, чтобы изменения отобразились
 /etc/init.d/uhttpd reload
-exit 0
 
 install_awg_packages() {
     # Получение pkgarch с наибольшим приоритетом
