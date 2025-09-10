@@ -554,16 +554,21 @@ then
   uci commit firewall
 fi
 
+#!/bin/sh
+
 printf "\033[32;1mAutomatic generate config AmneziaWG WARP (n) or manual input parameters for AmneziaWG (y)...\033[0m\n"
+
 countRepeatAWGGen=2
 echo "Input manual parameters AmneziaWG? (y/n): "
 read is_manual_input_parameters
+
 currIter=0
 isExit=0
-while [ $currIter -lt $countRepeatAWGGen ] && [ "$isExit" = "0" ]
-do
-    currIter=$(( $currIter + 1 ))
+
+while [ $currIter -lt $countRepeatAWGGen ] && [ "$isExit" = "0" ]; do
+    currIter=$((currIter + 1))
     printf "\033[32;1mCreate and Check AWG WARP... Attempt #$currIter... Please wait...\033[0m\n"
+
     if [ "$is_manual_input_parameters" = "y" ] || [ "$is_manual_input_parameters" = "Y" ]; then
         echo "Enter the private key (from [Interface]):"
         read -r PrivateKey
@@ -607,23 +612,28 @@ do
         MTU=1280
         AllowedIPs="0.0.0.0/0"
         isExit=1
+
     else
         warp_config="Error"
         printf "\033[32;1mRequest WARP config... Attempt #1\033[0m\n"
         result=$(requestConfWARP1)
         warpGen=$(check_request "$result" 1)
+        
         if [ "$warpGen" = "Error" ]; then
             printf "\033[32;1mRequest WARP config... Attempt #2\033[0m\n"
             result=$(requestConfWARP2)
             warpGen=$(check_request "$result" 2)
+            
             if [ "$warpGen" = "Error" ]; then
                 printf "\033[32;1mRequest WARP config... Attempt #3\033[0m\n"
                 result=$(requestConfWARP3)
                 warpGen=$(check_request "$result" 3)
+                
                 if [ "$warpGen" = "Error" ]; then
                     printf "\033[32;1mRequest WARP config... Attempt #4\033[0m\n"
                     result=$(requestConfWARP4)
                     warpGen=$(check_request "$result" 4)
+                    
                     if [ "$warpGen" = "Error" ]; then
                         warp_config="Error"
                     else
@@ -642,17 +652,15 @@ do
         if [ "$warp_config" = "Error" ]; then
             printf "\033[32;1mGenerate config AWG WARP failed...Try again later...\033[0m\n"
             isExit=2
-            #exit 1
         else
-            while IFS=' = ' read -r line; do
+            # Обрабатываем WARP конфиг через pipe вместо process substitution
+            echo "$warp_config" | while IFS=' = ' read -r line; do
                 if echo "$line" | grep -q "="; then
                     key=$(echo "$line" | cut -d'=' -f1 | xargs)
                     value=$(echo "$line" | cut -d'=' -f2- | xargs)
                     eval "$key=\"$value\""
                 fi
-            done <<EOF
-$(echo "$warp_config")
-EOF
+            done
 
             Address=$(echo "$Address" | cut -d',' -f1)
             DNS=$(echo "$DNS" | cut -d',' -f1)
@@ -701,6 +709,7 @@ EOF
         uci set network.@${CONFIG_NAME}[-1].route_allowed_ips='0'
         uci commit network
 
+        # Firewall zone
         if ! uci show firewall | grep -q "@zone.*name='${ZONE_NAME}'"; then
             printf "\033[32;1mZone Create\033[0m\n"
             uci add firewall zone
@@ -736,13 +745,14 @@ EOF
                 fi
             fi
         done
+
         if [ "$currIter" = "1" ]; then
             service firewall restart
         fi
 
         ifdown $INTERFACE_NAME
         ifup $INTERFACE_NAME
-        printf "\033[32;1mWait up AWG WARP 10 second...\033[0m\n"
+        printf "\033[32;1mWait up AWG WARP 10 seconds...\033[0m\n"
         sleep 10
 
         pingAddress="8.8.8.8"
