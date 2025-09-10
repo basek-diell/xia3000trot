@@ -10,15 +10,26 @@ install_awg_packages() {
     PKGPOSTFIX="_v${VERSION}_${PKGARCH}_${TARGET}_${SUBTARGET}.ipk"
     BASE_URL="https://github.com/Slava-Shchipunov/awg-openwrt/releases/download/"
 
-	# Удаляем конфликтующий пакет luci-proto-amneziawg
-	if opkg list-installed | grep -q luci-proto-amneziawg; then
-   		 echo "Removing conflicting package luci-proto-amneziawg..."
-  	 	 opkg remove luci-proto-amneziawg
-	fi
+install_awg_packages() {
+    # Получение pkgarch с наибольшим приоритетом
+    PKGARCH=$(opkg print-architecture | awk 'BEGIN {max=0} {if ($3 > max) {max = $3; arch = $2}} END {print arch}')
+
+    TARGET=$(ubus call system board | jsonfilter -e '@.release.target' | cut -d '/' -f 1)
+    SUBTARGET=$(ubus call system board | jsonfilter -e '@.release.target' | cut -d '/' -f 2)
+    VERSION=$(ubus call system board | jsonfilter -e '@.release.version')
+    PKGPOSTFIX="_v${VERSION}_${PKGARCH}_${TARGET}_${SUBTARGET}.ipk"
+    BASE_URL="https://github.com/Slava-Shchipunov/awg-openwrt/releases/download/"
 
     AWG_DIR="/tmp/amneziawg"
     mkdir -p "$AWG_DIR"
     
+    # Удаляем конфликтующий пакет luci-proto-amneziawg
+    if opkg list-installed | grep -q luci-proto-amneziawg; then
+        echo "Removing conflicting package luci-proto-amneziawg..."
+        opkg remove luci-proto-amneziawg
+    fi
+    
+    # Установка kmod-amneziawg
     if opkg list-installed | grep -q kmod-amneziawg; then
         echo "kmod-amneziawg already installed"
     else
@@ -36,13 +47,14 @@ install_awg_packages() {
         opkg install "$AWG_DIR/$KMOD_AMNEZIAWG_FILENAME"
 
         if [ $? -eq 0 ]; then
-            echo "kmod-amneziawg file downloaded successfully"
+            echo "kmod-amneziawg installed successfully"
         else
             echo "Error installing kmod-amneziawg. Please, install kmod-amneziawg manually and run the script again"
             exit 1
         fi
     fi
 
+    # Установка amneziawg-tools
     if opkg list-installed | grep -q amneziawg-tools; then
         echo "amneziawg-tools already installed"
     else
@@ -60,13 +72,14 @@ install_awg_packages() {
         opkg install "$AWG_DIR/$AMNEZIAWG_TOOLS_FILENAME"
 
         if [ $? -eq 0 ]; then
-            echo "amneziawg-tools file downloaded successfully"
+            echo "amneziawg-tools installed successfully"
         else
             echo "Error installing amneziawg-tools. Please, install amneziawg-tools manually and run the script again"
             exit 1
         fi
     fi
     
+    # Установка luci-app-amneziawg
     if opkg list-installed | grep -q luci-app-amneziawg; then
         echo "luci-app-amneziawg already installed"
     else
@@ -84,7 +97,7 @@ install_awg_packages() {
         opkg install "$AWG_DIR/$LUCI_APP_AMNEZIAWG_FILENAME"
 
         if [ $? -eq 0 ]; then
-            echo "luci-app-amneziawg file downloaded successfully"
+            echo "luci-app-amneziawg installed successfully"
         else
             echo "Error installing luci-app-amneziawg. Please, install luci-app-amneziawg manually and run the script again"
             exit 1
@@ -93,6 +106,7 @@ install_awg_packages() {
 
     rm -rf "$AWG_DIR"
 }
+
 
 manage_package() {
     local name="$1"
