@@ -800,7 +800,7 @@ service odhcpd restart
 
 path_podkop_config="/etc/config/podkop"
 path_podkop_config_backup="/root/podkop"
-URL=https://raw.githubusercontent.com/basek-diell/xia3000t./refs/heads/main"
+URL=https://raw.githubusercontent.com/basek-diell/xia3000trot/refs/heads/main"
 
 case $varByPass in
 1)
