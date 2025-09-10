@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 # Остановка сервисов (если есть)
  /etc/init.d/nextdns stop 2>/dev/null
  /etc/init.d/podkop stop 2>/dev/null
