@@ -10,6 +10,12 @@ install_awg_packages() {
     PKGPOSTFIX="_v${VERSION}_${PKGARCH}_${TARGET}_${SUBTARGET}.ipk"
     BASE_URL="https://github.com/Slava-Shchipunov/awg-openwrt/releases/download/"
 
+	# Удаляем конфликтующий пакет luci-proto-amneziawg
+	if opkg list-installed | grep -q luci-proto-amneziawg; then
+   		 echo "Removing conflicting package luci-proto-amneziawg..."
+  	 	 opkg remove luci-proto-amneziawg
+	fi
+
     AWG_DIR="/tmp/amneziawg"
     mkdir -p "$AWG_DIR"
     
