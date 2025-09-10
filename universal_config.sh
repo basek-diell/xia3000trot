@@ -564,8 +564,7 @@ while [ $currIter -lt $countRepeatAWGGen ] && [ "$isExit" = "0" ]
 do
     currIter=$(( $currIter + 1 ))
     printf "\033[32;1mCreate and Check AWG WARP... Attempt #$currIter... Please wait...\033[0m\n"
-    if [ "$is_manual_input_parameters" = "y" ] || [ "$is_manual_input_parameters" = "Y" ]
-    then
+    if [ "$is_manual_input_parameters" = "y" ] || [ "$is_manual_input_parameters" = "Y" ]; then
         echo "Enter the private key (from [Interface]):"
         read -r PrivateKey
         echo "Enter S1 value (from [Interface]):"
@@ -613,23 +612,19 @@ do
         printf "\033[32;1mRequest WARP config... Attempt #1\033[0m\n"
         result=$(requestConfWARP1)
         warpGen=$(check_request "$result" 1)
-        if [ "$warpGen" = "Error" ]
-        then
+        if [ "$warpGen" = "Error" ]; then
             printf "\033[32;1mRequest WARP config... Attempt #2\033[0m\n"
             result=$(requestConfWARP2)
             warpGen=$(check_request "$result" 2)
-            if [ "$warpGen" = "Error" ]
-            then
+            if [ "$warpGen" = "Error" ]; then
                 printf "\033[32;1mRequest WARP config... Attempt #3\033[0m\n"
                 result=$(requestConfWARP3)
                 warpGen=$(check_request "$result" 3)
-                if [ "$warpGen" = "Error" ]
-                then
+                if [ "$warpGen" = "Error" ]; then
                     printf "\033[32;1mRequest WARP config... Attempt #4\033[0m\n"
                     result=$(requestConfWARP4)
                     warpGen=$(check_request "$result" 4)
-                    if [ "$warpGen" = "Error" ]
-                    then
+                    if [ "$warpGen" = "Error" ]; then
                         warp_config="Error"
                     else
                         warp_config=$warpGen
@@ -644,8 +639,7 @@ do
             warp_config=$warpGen
         fi
 
-        if [ "$warp_config" = "Error" ] 
-        then
+        if [ "$warp_config" = "Error" ]; then
             printf "\033[32;1mGenerate config AWG WARP failed...Try again later...\033[0m\n"
             isExit=2
             #exit 1
@@ -656,7 +650,9 @@ do
                     value=$(echo "$line" | cut -d'=' -f2- | xargs)
                     eval "$key=\"$value\""
                 fi
-            done < <(echo "$warp_config")
+            done <<EOF
+$(echo "$warp_config")
+EOF
 
             Address=$(echo "$Address" | cut -d',' -f1)
             DNS=$(echo "$DNS" | cut -d',' -f1)
@@ -666,8 +662,7 @@ do
         fi
     fi
 
-    if [ "$isExit" = "2" ] 
-    then
+    if [ "$isExit" = "2" ]; then
         isExit=0
     else
         printf "\033[32;1mCreate and configure tunnel AmneziaWG WARP...\033[0m\n"
@@ -741,8 +736,7 @@ do
                 fi
             fi
         done
-        if [ "$currIter" = "1" ]
-        then
+        if [ "$currIter" = "1" ]; then
             service firewall restart
         fi
 
@@ -752,14 +746,14 @@ do
         sleep 10
 
         pingAddress="8.8.8.8"
-        if ping -c 1 -I $INTERFACE_NAME $pingAddress >/dev/null 2>&1
-        then
+        if ping -c 1 -I $INTERFACE_NAME $pingAddress >/dev/null 2>&1; then
             isExit=1
         else
             isExit=0
         fi
     fi
 done
+
 varByPass=0
 
 if [ "$isExit" = "1" ]
