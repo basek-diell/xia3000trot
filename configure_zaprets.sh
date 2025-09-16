@@ -1,6 +1,6 @@
 #!/bin/sh
 
-URL="https://raw.githubusercontent.com/basek-diell/xia3000t./refs/heads/main"
+URL="https://raw.githubusercontent.com/basek-diell/xia3000trot/refs/heads/main" 
 DIR="/etc/config"
 DIR_BACKUP="/root/backup"
 config_files="dhcp
